@@ -4,13 +4,20 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
+import { env } from "./lib/utils.ts";
+import { ClerkProvider } from "@clerk/clerk-react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <Provider>
-        <App />
-      </Provider>
+      <ClerkProvider
+        publishableKey={env.CLERK_PUBLISHABLE_KEY}
+        afterSignOutUrl="/auth/login"
+      >
+        <Provider>
+          <App />
+        </Provider>
+      </ClerkProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
