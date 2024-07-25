@@ -2,7 +2,14 @@
   "name": "quizkuy",
   "private": true,
   "version": "0.0.0",
+  "author": "Haikel Ilham Hakim",
+  "description": "DOT Internship Frontend Assigment: Quiz App",
   "type": "module",
+  "homepage": "https://quizkuy.ekel.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haikelz/quizkuy"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -22,7 +29,6 @@
     "lucide-react": "^0.414.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.25.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"

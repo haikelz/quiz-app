@@ -3,7 +3,7 @@ import IsPending from "@/components/IsPending";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heading, Paragraph } from "@/components/ui/typography";
-import { useFetch, usePagination } from "@/hooks";
+import { useFetch, usePagination, useTitle } from "@/hooks";
 import { env, quizCategories } from "@/lib/utils";
 import {
   amountQuestionsAtom,
@@ -17,6 +17,8 @@ import htmr from "htmr";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent } from "react";
 
+const { API_URL } = env;
+
 export default function Homepage() {
   const [quizCategory, setQuizCategory] = useAtom(quizCategoryAtom);
   const [answer, setAnswer] = useAtom(answerAtom);
@@ -24,8 +26,10 @@ export default function Homepage() {
 
   const rightAnswer = useAtomValue(rightAnswerAtom);
 
+  useTitle("Kerjakan soal kuis");
+
   const { data, isPending, isError, isRefetching } = useFetch(
-    `${env.API_URL}?amount=${amountQuestions}${
+    `${API_URL}?amount=${amountQuestions}${
       quizCategory ? `&category=${quizCategory}` : ""
     }`
   );
@@ -75,6 +79,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
         <Heading as="h2">Quizkuy</Heading>
         <div className="flex flex-col justify-center items-center">
           {currentData.map((item) => {
+            // Merge correct answer and incorrect answers to one array
             const answerOptions = [
               item.correct_answer,
               ...item.incorrect_answers,
@@ -99,7 +104,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                             setAnswer(answer);
                           }}
                         >
-                          {answer}
+                          {htmr(answer)}
                         </Button>
                       ))}
                     </div>

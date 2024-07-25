@@ -11,3 +11,10 @@
 - Repo
 - Video demo
 
+## TODO
+
+- Login (WIP)
+- Jumlah dan Type Soal (DONE)
+- Timer (WIP)
+- Timer habis, soal akan ditutup (WIP)
+- Resume Kuis (WIP)

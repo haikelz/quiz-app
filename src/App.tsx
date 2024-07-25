@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
 import SignIn from "./pages/Auth/SignIn";
 import Homepage from "./pages/Home";
+import SignUp from "./pages/Auth/SignUp";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -26,6 +27,14 @@ export default function App() {
             element={
               <SignedOut>
                 <SignIn />
+              </SignedOut>
+            }
+          />
+          <Route
+            path="/auth/sign-up"
+            element={
+              <SignedOut>
+                <SignUp />
               </SignedOut>
             }
           />
