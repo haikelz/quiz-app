@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export const env = {
   API_URL: import.meta.env.VITE_API_URL,
   CLERK_PUBLISHABLE_KEY: import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+  API_SESSION_TOKEN: import.meta.env.VITE_API_SESSION_TOKEN,
 };
 
 export const quizCategories = [

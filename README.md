@@ -4,6 +4,10 @@
 - Typescript
 - Tailwind CSS w/shadcn-ui
 
+## Quiz Website Flow and Note
+
+![Flow](public/docs/flow-quiz-app.png)
+
 ## Screenshots
 
 ## Link
@@ -18,3 +22,4 @@
 - Timer (WIP)
 - Timer habis, soal akan ditutup (WIP)
 - Resume Kuis (WIP)
+- Masukin cara kerja sebuah Website Quiz (WIP)

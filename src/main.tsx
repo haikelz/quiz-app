@@ -7,11 +7,13 @@ import "./index.css";
 import { env } from "./lib/utils.ts";
 import { ClerkProvider } from "@clerk/clerk-react";
 
+const { CLERK_PUBLISHABLE_KEY } = env;
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <ClerkProvider
-        publishableKey={env.CLERK_PUBLISHABLE_KEY}
+        publishableKey={CLERK_PUBLISHABLE_KEY}
         afterSignOutUrl="/auth/sign-in"
         signUpForceRedirectUrl="/auth/sign-in"
         signInForceRedirectUrl="/"

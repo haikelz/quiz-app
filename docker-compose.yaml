@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: quiz-app
+    container_name: quizkuy
     restart: always
     ports:
       - "3000:3000"

@@ -1,8 +1,10 @@
-import { HTMLAttributes, ReactNode } from "react";
+import { SetStateAction } from "jotai";
+import { Dispatch, HTMLAttributes, ReactNode } from "react";
 
 export type ChildrenProps = { children: ReactNode };
 
 export type QuestionProps = {
+  id: number;
   type: string;
   difficulty: string;
   category: string;
@@ -17,3 +19,10 @@ export type HeadingProps = HTMLAttributes<HTMLHeadingElement> & {
 
 export type ParagraphProps = ChildrenProps &
   HTMLAttributes<HTMLParagraphElement>;
+
+export type UsePaginationProps<T> = {
+  currentPage: number;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  pageNumbers: number[];
+  currentData: Array<T>;
+};
