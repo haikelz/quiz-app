@@ -5,17 +5,32 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Paragraph } from "@/components/ui/typography";
 import { useFetch, usePagination, useTitle } from "@/hooks";
 import { cn, env } from "@/lib/utils";
-import { quizCategoryAtom } from "@/store";
+import {
+  answerAtom,
+  modalConfirmationSubmitAtom,
+  modalResultAtom,
+  quizCategoryAtom,
+  selectAnswerAtom,
+} from "@/store";
 import { QuestionProps } from "@/types";
 import htmr from "htmr";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useMemo } from "react";
+import { Suspense, lazy } from "react";
+
+const Timer = lazy(() => import("@/components/Timer"));
+const ModalResult = lazy(() => import("@/components/ModalResult"));
+const ModalConfirmationSubmit = lazy(
+  () => import("@/components/ModalConfirmationSubmit")
+);
 
 const { API_URL } = env;
 
 export default function Homepage() {
   const [quizCategory] = useAtom(quizCategoryAtom);
+
+  const modalConfirmationSubmit = useAtomValue(modalConfirmationSubmitAtom);
+  const modalResult = useAtomValue(modalResultAtom);
 
   useTitle("Kerjakan soal kuis");
 
@@ -43,40 +58,33 @@ export default function Homepage() {
             </option>
           ))}
         </select>*/}
+        {modalConfirmationSubmit ? (
+          <Suspense>
+            <ModalConfirmationSubmit />
+          </Suspense>
+        ) : null}
+        {modalResult ? (
+          <Suspense>
+            <ModalResult />
+          </Suspense>
+        ) : null}
       </section>
     </>
   );
 }
 
 function QuestionsList({ questions }: { questions: QuestionProps[] }) {
-  const initialQuestionsAtom = useMemo(
-    () =>
-      atom((localStorage.getItem("questions") || questions) as QuestionProps[]),
-    [questions]
-  );
-
-  const answerAtom = useMemo(
-    () =>
-      atom(
-        (localStorage.getItem("answer") ||
-          questions.map((_, index) => ({
-            id: index + 1,
-            answer: "",
-          }))) as { id: number; answer: string }[]
-      ),
-    [questions]
-  );
-
-  const initialQuestions = useAtomValue(initialQuestionsAtom);
   const [answer, setAnswer] = useAtom(answerAtom);
+  const [selectAnswer, setSelectAnswer] = useAtom(selectAnswerAtom);
 
-  const { currentData, setCurrentPage, currentPage } =
-    usePagination(initialQuestions);
+  const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
+
+  const { currentData, setCurrentPage, currentPage } = usePagination(questions);
 
   return (
     <>
       <div className="flex w-full space-x-3 fixed top-4 justify-center items-center">
-        {initialQuestions.map((item) => (
+        {questions.map((item) => (
           <Button
             variant="outline"
             className={cn(
@@ -124,40 +132,64 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                     ) : null}
                     {currentPage < 10 ? (
                       <Button
-                        onClick={() => setCurrentPage((prev) => prev + 1)}
+                        onClick={() => {
+                          setCurrentPage((prev) => prev + 1);
+                          selectAnswer !== ""
+                            ? setAnswer((prev) =>
+                                prev.map((data) => ({
+                                  ...data,
+                                  answer:
+                                    data.id === item.id
+                                      ? selectAnswer
+                                      : data.id < item.id
+                                      ? data.answer
+                                      : "",
+                                }))
+                              )
+                            : null;
+                        }}
                         size="icon"
                         className="rounded-full"
                       >
                         <ArrowRight size={20} />
                       </Button>
-                    ) : null}
-                  </div>
-                </CardHeader>
-                <CardContent className="w-full">
-                  <Paragraph className="font-semibold">
-                    {currentPage}. {htmr(item.question)}
-                  </Paragraph>
-                  <div className="flex justify-center flex-wrap gap-4 items-center mt-3">
-                    {answerOptions.map((ans) => (
+                    ) : (
                       <Button
-                        variant="secondary"
                         onClick={() => {
                           setAnswer((prev) =>
                             prev.map((data) => ({
                               ...data,
                               answer:
                                 data.id === item.id
-                                  ? ans
+                                  ? selectAnswer
                                   : data.id < item.id
                                   ? data.answer
                                   : "",
                             }))
                           );
-
-                          localStorage.setItem(
-                            "answer",
-                            JSON.stringify(answer)
-                          );
+                          setModalConfirmationSubmit(true);
+                        }}
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="w-full">
+                  <Paragraph className="font-semibold">
+                    {currentPage}. {htmr(item.question)}
+                  </Paragraph>
+                  <div className="flex justify-center flex-wrap gap-4 items-center mt-4">
+                    {answerOptions.map((ans) => (
+                      <Button
+                        variant={
+                          selectAnswer === ans ||
+                          answer[currentPage - 1].answer === ans
+                            ? "destructive"
+                            : "secondary"
+                        }
+                        onClick={() => {
+                          setSelectAnswer(ans);
                         }}
                       >
                         {htmr(ans)}

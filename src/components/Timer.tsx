@@ -11,7 +11,7 @@ export default function Timer() {
     setInterval(() => {
       setDate(new Date());
     }, 1000);
-  }, [setDate]);
+  }, [setDate, date]);
 
   return (
     <div>
