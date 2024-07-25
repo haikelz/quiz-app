@@ -1,4 +1,4 @@
-import { SignedOut } from "@clerk/clerk-react";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
@@ -16,9 +16,9 @@ export default function App() {
           <Route
             path="/"
             element={
-              <SignedOut>
+              <SignedIn>
                 <Homepage />
-              </SignedOut>
+              </SignedIn>
             }
           />
           <Route
