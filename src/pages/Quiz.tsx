@@ -83,6 +83,8 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
 
   const { currentData, setCurrentPage, currentPage } = usePagination(questions);
 
+  console.log(answer);
+
   return (
     <>
       <div className="flex w-fit space-y-3 flex-col fixed right-4 justify-center items-center">
@@ -93,22 +95,6 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
               "w-10 h-10 rounded-full flex justify-center items-center",
               item.id === currentPage ? "bg-gray-200" : ""
             )}
-            onClick={() => {
-              setCurrentPage(item.id);
-              selectAnswer !== ""
-                ? setAnswer((prev) =>
-                    prev.map((data) => ({
-                      ...data,
-                      answer:
-                        data.id === item.id
-                          ? selectAnswer
-                          : data.id < item.id
-                          ? data.answer
-                          : "",
-                    }))
-                  )
-                : null;
-            }}
           >
             {item.id}
           </Button>
@@ -162,6 +148,13 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                                       : data.id < item.id
                                       ? data.answer
                                       : "",
+                                  status:
+                                    data.id === item.id &&
+                                    selectAnswer === item.correct_answer
+                                      ? true
+                                      : data.id < item.id
+                                      ? data.status
+                                      : false,
                                 }))
                               )
                             : null;

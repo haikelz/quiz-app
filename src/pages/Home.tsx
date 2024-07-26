@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Heading, Paragraph } from "@/components/ui/typography";
+import { useClickOutside } from "@/hooks";
 import { quizCategories } from "@/lib/utils";
 import { modalPreferencesAtom } from "@/store";
 import {
@@ -8,12 +9,17 @@ import {
   SignedIn,
   SignedOut,
 } from "@clerk/clerk-react";
-import { useAtom } from "jotai";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+const isOpenModalPreferencesAtom = atom<boolean>(false);
+
 export default function Homepage() {
-  const [modalPreferences, setModalPreferences] = useAtom(modalPreferencesAtom);
+  const setModalPreferences = useSetAtom(modalPreferencesAtom);
+  const [isOpenModalPreferences, setIsOpenModalPreferences] = useAtom(
+    isOpenModalPreferencesAtom
+  );
 
   return (
     <>
@@ -43,12 +49,13 @@ export default function Homepage() {
               </SignedOut>
               <SignedIn>
                 <Button
-                  onClick={() =>
+                  onClick={() => {
+                    setIsOpenModalPreferences(true);
                     setModalPreferences((prev) => ({
                       ...prev,
                       isOpenModal: true,
-                    }))
-                  }
+                    }));
+                  }}
                 >
                   Set your preferences
                 </Button>
@@ -58,16 +65,19 @@ export default function Homepage() {
           <img src="/images/illustration.svg" className="w-96 h-96" />
         </div>
       </section>
-      {modalPreferences.isOpenModal ? <ModalPreferences /> : null}
+      {isOpenModalPreferences ? <ModalPreferences /> : null}
     </>
   );
 }
 
 function ModalPreferences() {
   const [modalPreferences, setModalPreferences] = useAtom(modalPreferencesAtom);
+  const setIsOpenModalPreferences = useSetAtom(isOpenModalPreferencesAtom);
 
   const openRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  useClickOutside(setIsOpenModalPreferences, openRef);
 
   return (
     <div className="fixed top-0 backdrop-blur-sm w-full flex justify-center items-center min-h-svh">
@@ -129,15 +139,17 @@ function ModalPreferences() {
         </select>
         <div className="flex justify-center items-center space-x-3 w-fit">
           <Button
-            onClick={() =>
-              setModalPreferences((prev) => ({ ...prev, isOpenModal: false }))
-            }
+            onClick={() => {
+              setIsOpenModalPreferences(false);
+              setModalPreferences((prev) => ({ ...prev, isOpenModal: false }));
+            }}
             variant="destructive"
           >
             Batal
           </Button>
           <Button
             onClick={() => {
+              setIsOpenModalPreferences(false);
               localStorage.setItem(
                 "preferences",
                 JSON.stringify(modalPreferences)
