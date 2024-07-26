@@ -1,10 +1,9 @@
-import { SignedOut } from "@clerk/clerk-react";
+import { SignedIn } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
-import SignIn from "./pages/Auth/SignIn";
-import SignUp from "./pages/Auth/SignUp";
 import Homepage from "./pages/Home";
+import Quiz from "./pages/Quiz";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -16,19 +15,11 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route
-            path="/auth/sign-in"
+            path="/quiz"
             element={
-              <SignedOut>
-                <SignIn />
-              </SignedOut>
-            }
-          />
-          <Route
-            path="/auth/sign-up"
-            element={
-              <SignedOut>
-                <SignUp />
-              </SignedOut>
+              <SignedIn>
+                <Quiz />
+              </SignedIn>
             }
           />
           <Route path="/questions" />

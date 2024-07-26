@@ -3,6 +3,8 @@
 - React JS
 - Typescript
 - Tailwind CSS w/shadcn-ui
+- React Query
+- Jotai
 
 ## Quiz Website Flow and Note
 

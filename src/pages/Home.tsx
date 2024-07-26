@@ -1,207 +1,154 @@
-import IsError from "@/components/IsError";
-import IsPending from "@/components/IsPending";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Paragraph } from "@/components/ui/typography";
-import { useFetch, usePagination, useTitle } from "@/hooks";
-import { cn, env } from "@/lib/utils";
+import { Heading, Paragraph } from "@/components/ui/typography";
+import { quizCategories } from "@/lib/utils";
+import { modalPreferencesAtom } from "@/store";
 import {
-  answerAtom,
-  modalConfirmationSubmitAtom,
-  modalResultAtom,
-  quizCategoryAtom,
-  selectAnswerAtom,
-} from "@/store";
-import { QuestionProps } from "@/types";
-import htmr from "htmr";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { Suspense, lazy } from "react";
-
-const Timer = lazy(() => import("@/components/Timer"));
-const ModalResult = lazy(() => import("@/components/ModalResult"));
-const ModalConfirmationSubmit = lazy(
-  () => import("@/components/ModalConfirmationSubmit")
-);
-
-const { API_URL } = env;
+  SignInButton,
+  SignOutButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/clerk-react";
+import { useAtom } from "jotai";
+import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Homepage() {
-  const [quizCategory] = useAtom(quizCategoryAtom);
-
-  const modalConfirmationSubmit = useAtomValue(modalConfirmationSubmitAtom);
-  const modalResult = useAtomValue(modalResultAtom);
-
-  useTitle("Kerjakan soal kuis");
-
-  const { data, isPending, isError, isRefetching } = useFetch(
-    `${API_URL}?amount=10${quizCategory ? `&category=${quizCategory}` : ""}`
-  );
-
-  if (isPending || isRefetching) return <IsPending />;
-  if (isError) return <IsError />;
-
-  const questions = (data.results as QuestionProps[]).map((item, index) => ({
-    ...item,
-    id: index + 1,
-  }));
+  const [modalPreferences, setModalPreferences] = useAtom(modalPreferencesAtom);
 
   return (
     <>
-      <section className="w-full flex flex-col justify-center max-w-3xl min-h-svh items-center">
-        <QuestionsList questions={questions} />
-        {/*<select value={quizCategory} onChange={onChangeCategory}>
-          <option>Select Category</option>
-          {quizCategories.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>*/}
-        {modalConfirmationSubmit ? (
-          <Suspense>
-            <ModalConfirmationSubmit />
-          </Suspense>
-        ) : null}
-        {modalResult ? (
-          <Suspense>
-            <ModalResult />
-          </Suspense>
-        ) : null}
+      <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
+        <div className="flex justify-center items-center">
+          <div className="flex flex-col justify-center items-start">
+            <div>
+              <div>
+                <Heading as="h2">Unleash the Fun, One Quiz at a Time</Heading>
+                <Paragraph className="mt-2">
+                  Welcome to Quizkuy, the ultimate destination for quiz lovers!
+                </Paragraph>
+              </div>
+            </div>
+            <div className="flex space-x-3 mt-4 justify-center items-center w-fit">
+              <SignedIn>
+                <SignOutButton>
+                  <Button variant="destructive">Sign Out</Button>
+                </SignOutButton>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton forceRedirectUrl="/">
+                  <Button variant="outline" className="font-medium">
+                    Sign In dengan Google
+                  </Button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <Button
+                  onClick={() =>
+                    setModalPreferences((prev) => ({
+                      ...prev,
+                      isOpenModal: true,
+                    }))
+                  }
+                >
+                  Set your preferences
+                </Button>
+              </SignedIn>
+            </div>
+          </div>
+          <img src="/images/illustration.svg" className="w-96 h-96" />
+        </div>
       </section>
+      {modalPreferences.isOpenModal ? <ModalPreferences /> : null}
     </>
   );
 }
 
-function QuestionsList({ questions }: { questions: QuestionProps[] }) {
-  const [answer, setAnswer] = useAtom(answerAtom);
-  const [selectAnswer, setSelectAnswer] = useAtom(selectAnswerAtom);
+function ModalPreferences() {
+  const [modalPreferences, setModalPreferences] = useAtom(modalPreferencesAtom);
 
-  const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
-
-  const { currentData, setCurrentPage, currentPage } = usePagination(questions);
+  const openRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   return (
-    <>
-      <div className="flex w-full space-x-3 fixed top-4 justify-center items-center">
-        {questions.map((item) => (
+    <div className="fixed top-0 backdrop-blur-sm w-full flex justify-center items-center min-h-svh">
+      <div
+        ref={openRef}
+        className="bg-white p-4 rounded-md flex justify-center items-center flex-col drop-shadow-md"
+      >
+        <Paragraph>Kategori</Paragraph>
+        <select
+          value={modalPreferences.category}
+          onChange={(e) =>
+            setModalPreferences((prev) => ({
+              ...prev,
+              category: e.target.value,
+            }))
+          }
+        >
+          {quizCategories.map((item, index) => (
+            <option key={index + 1} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
+        <Paragraph>Tingkat kesusahan</Paragraph>
+        <select
+          value={modalPreferences.difficulity}
+          onChange={(e) =>
+            setModalPreferences((prev) => ({
+              ...prev,
+              difficulity: e.target.value,
+            }))
+          }
+        >
+          {[
+            { difficulity: "easy" },
+            { difficulity: "medium" },
+            { difficulity: "hard" },
+          ].map((item, index) => (
+            <option key={index + 1} value={item.difficulity}>
+              {item.difficulity}
+            </option>
+          ))}
+        </select>
+        <Paragraph>Tipe</Paragraph>
+        <select
+          value={modalPreferences.type}
+          onChange={(e) =>
+            setModalPreferences((prev) => ({
+              ...prev,
+              type: e.target.value,
+            }))
+          }
+        >
+          {[{ type: "multiple" }, { type: "boolean" }].map((item, index) => (
+            <option key={index + 1} value={item.type}>
+              {item.type}
+            </option>
+          ))}
+        </select>
+        <div className="flex justify-center items-center space-x-3 w-fit">
           <Button
-            variant="outline"
-            className={cn(
-              "w-10 h-10 rounded-full flex justify-center items-center",
-              item.id === currentPage ? "bg-gray-200" : ""
-            )}
+            onClick={() =>
+              setModalPreferences((prev) => ({ ...prev, isOpenModal: false }))
+            }
+            variant="destructive"
           >
-            {item.id}
+            Batal
           </Button>
-        ))}
-      </div>
-      <div className="flex justify-center w-full items-center flex-col">
-        <div className="flex flex-col justify-center items-center w-full">
-          {currentData.map((item) => {
-            // Merge correct answer and incorrect answers to one array
-            const answerOptions = [
-              item.correct_answer,
-              ...item.incorrect_answers,
-            ].sort();
-            return (
-              <Card className="w-full">
-                <CardHeader className="flex justify-between w-full items-center flex-row">
-                  <div className="rounded-sm bg-yellow-200 px-2 py-0.5 font-bold w-fit">
-                    <Paragraph>{item.type}</Paragraph>
-                  </div>
-                  <div
-                    className={cn(
-                      "w-fit flex mt-4 items-center space-x-3",
-                      currentPage <= 1
-                        ? "justify-end"
-                        : currentPage >= 10
-                        ? "justify-start"
-                        : ""
-                    )}
-                  >
-                    {currentPage > 1 ? (
-                      <Button
-                        onClick={() => setCurrentPage((prev) => prev - 1)}
-                        size="icon"
-                        className="rounded-full"
-                        variant="outline"
-                      >
-                        <ArrowLeft size={20} />
-                      </Button>
-                    ) : null}
-                    {currentPage < 10 ? (
-                      <Button
-                        onClick={() => {
-                          setCurrentPage((prev) => prev + 1);
-                          selectAnswer !== ""
-                            ? setAnswer((prev) =>
-                                prev.map((data) => ({
-                                  ...data,
-                                  answer:
-                                    data.id === item.id
-                                      ? selectAnswer
-                                      : data.id < item.id
-                                      ? data.answer
-                                      : "",
-                                }))
-                              )
-                            : null;
-                        }}
-                        size="icon"
-                        className="rounded-full"
-                      >
-                        <ArrowRight size={20} />
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          setAnswer((prev) =>
-                            prev.map((data) => ({
-                              ...data,
-                              answer:
-                                data.id === item.id
-                                  ? selectAnswer
-                                  : data.id < item.id
-                                  ? data.answer
-                                  : "",
-                            }))
-                          );
-                          setModalConfirmationSubmit(true);
-                        }}
-                      >
-                        Submit
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="w-full">
-                  <Paragraph className="font-semibold">
-                    {currentPage}. {htmr(item.question)}
-                  </Paragraph>
-                  <div className="flex justify-center flex-wrap gap-4 items-center mt-4">
-                    {answerOptions.map((ans) => (
-                      <Button
-                        variant={
-                          selectAnswer === ans ||
-                          answer[currentPage - 1].answer === ans
-                            ? "destructive"
-                            : "secondary"
-                        }
-                        onClick={() => {
-                          setSelectAnswer(ans);
-                        }}
-                      >
-                        {htmr(ans)}
-                      </Button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          <Button
+            onClick={() => {
+              localStorage.setItem(
+                "preferences",
+                JSON.stringify(modalPreferences)
+              );
+              navigate("/quiz");
+            }}
+          >
+            Mulai!
+          </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

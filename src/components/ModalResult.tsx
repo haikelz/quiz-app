@@ -3,6 +3,7 @@ import { answerAtom, modalResultAtom } from "@/store";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useRef } from "react";
 import { Paragraph } from "./ui/typography";
+import { Info } from "lucide-react";
 
 export default function ModalResult() {
   const answer = useAtomValue(answerAtom);
@@ -10,19 +11,22 @@ export default function ModalResult() {
 
   const openRef = useRef<HTMLDivElement>(null);
 
-  const results = answer.filter((item) => item.status === true).length / 2;
+  const results =
+    (answer.filter((item) => item.status === true).length / 2) * 10;
 
   useClickOutside(setModalResult, openRef);
 
   return (
     <div className="fixed top-0 backdrop-blur-sm w-full flex justify-center items-center min-h-svh">
-      <div ref={openRef} className="bg-white p-4 rounded-md drop-shadow-md">
-        <Paragraph>
-          {results === 10
-            ? "Selamat! Kamu mendapatkan nilai yang sempurna nih."
-            : results >= 7
-            ? "Selamat! Kamu mendapatkan nilai yang bagus nih."
-            : "Maaf, tapi kamu mendapatkan nilai yang kurang bagus nih, coba lagi yaa :)"}
+      <div
+        ref={openRef}
+        className="bg-white p-4 rounded-md drop-shadow-md flex justify-center items-center space-x-3"
+      >
+        <Info />
+        <Paragraph className="font-medium">
+          {results >= 70 && results <= 100
+            ? `Selamat! Nilai kamu ${results}`
+            : `Maaf, nilai kamu ${results}`}
         </Paragraph>
       </div>
     </div>
