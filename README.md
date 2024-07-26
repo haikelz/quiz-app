@@ -1,3 +1,8 @@
+<div align="center">
+  <h1>Quizkuy</h1>
+  <p>Unleash the Fun, One Quiz at a Time</p>
+</div>
+
 ## Tech Stack
 
 - React JS
