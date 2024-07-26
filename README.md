@@ -22,6 +22,12 @@
 - Repo
 - Video demo
 
+## Getting Started
+
+- Clone this repo.
+- Install all dependencies with `pnpm install`.
+- Run this project with `pnpm run dev` and see the result in `http://localhost:3000`. You can also run this project using Docker. Start your Docker first and type `docker compose up --build` in your terminal.
+
 ## TODO
 
 - Login (WIP)
