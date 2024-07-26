@@ -26,3 +26,10 @@ export type UsePaginationProps<T> = {
   pageNumbers: number[];
   currentData: Array<T>;
 };
+
+export type ModalPreferencesProps = {
+  category: string;
+  difficulity: string;
+  type: string;
+  isOpenModal: boolean;
+};

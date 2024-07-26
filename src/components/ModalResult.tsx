@@ -26,7 +26,7 @@ export default function ModalResult() {
       >
         <div className="flex justify-center items-center space-x-3">
           <Info />
-          <Paragraph className="font-medium">
+          <Paragraph className="font-bold text-lg">
             {results >= 70 && results <= 100
               ? `Selamat! Nilai kamu ${results}`
               : `Maaf, nilai kamu ${results}!`}

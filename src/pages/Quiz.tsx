@@ -17,7 +17,7 @@ import htmr from "htmr";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Suspense, lazy } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const ModalResult = lazy(() => import("@/components/ModalResult"));
 const ModalConfirmationSubmit = lazy(
@@ -31,6 +31,7 @@ export default function Quiz() {
 
   const modalConfirmationSubmit = useAtomValue(modalConfirmationSubmitAtom);
   const modalResult = useAtomValue(modalResultAtom);
+  const navigate = useNavigate();
 
   useTitle("Kerjakan soal kuis");
 
@@ -54,22 +55,35 @@ export default function Quiz() {
 
   return (
     <>
-      {modalPreferences.isOpenModal ? (
-        <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
-          <QuestionsList questions={questions} />
-          {modalConfirmationSubmit ? (
-            <Suspense>
-              <ModalConfirmationSubmit />
-            </Suspense>
-          ) : null}
-          {modalResult ? (
-            <Suspense>
-              <ModalResult />
-            </Suspense>
-          ) : null}
-        </section>
+      {questions.length ? (
+        modalPreferences.isOpenModal ? (
+          <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
+            <QuestionsList questions={questions} />
+            {modalConfirmationSubmit ? (
+              <Suspense>
+                <ModalConfirmationSubmit />
+              </Suspense>
+            ) : null}
+            {modalResult ? (
+              <Suspense>
+                <ModalResult />
+              </Suspense>
+            ) : null}
+          </section>
+        ) : (
+          <Navigate to="/" />
+        )
       ) : (
-        <Navigate to="/" />
+        <div className="fixed z-50 top-0 backdrop-blur-sm w-full flex justify-center min-h-svh items-center">
+          <div className="bg-white p-4 rounded-md drop-shadow-md flex justify-center items-center flex-col space-y-3">
+            <Paragraph className="font-bold text-lg">
+              Soal tidak tersedia!
+            </Paragraph>
+            <Button onClick={() => navigate("/")} className="font-bold">
+              Kembali ke beranda
+            </Button>
+          </div>
+        </div>
       )}
     </>
   );
@@ -82,8 +96,6 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
   const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
 
   const { currentData, setCurrentPage, currentPage } = usePagination(questions);
-
-  console.log(answer);
 
   return (
     <>

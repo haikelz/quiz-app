@@ -2,21 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Heading, Paragraph } from "@/components/ui/typography";
 import { useClickOutside } from "@/hooks";
 import { quizCategories } from "@/lib/utils";
-import { modalPreferencesAtom } from "@/store";
+import { isOpenModalPreferencesAtom, modalPreferencesAtom } from "@/store";
 import {
   SignInButton,
   SignOutButton,
   SignedIn,
   SignedOut,
 } from "@clerk/clerk-react";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const isOpenModalPreferencesAtom = atom<boolean>(false);
-
 export default function Homepage() {
   const setModalPreferences = useSetAtom(modalPreferencesAtom);
+
   const [isOpenModalPreferences, setIsOpenModalPreferences] = useAtom(
     isOpenModalPreferencesAtom
   );
@@ -37,12 +36,14 @@ export default function Homepage() {
             <div className="flex space-x-3 mt-4 justify-center items-center w-fit">
               <SignedIn>
                 <SignOutButton>
-                  <Button variant="destructive">Sign Out</Button>
+                  <Button variant="destructive" className="font-bold">
+                    Sign Out
+                  </Button>
                 </SignOutButton>
               </SignedIn>
               <SignedOut>
                 <SignInButton forceRedirectUrl="/">
-                  <Button variant="outline" className="font-medium">
+                  <Button variant="outline" className="font-bold text-lg">
                     Sign In dengan Google
                   </Button>
                 </SignInButton>
@@ -56,6 +57,7 @@ export default function Homepage() {
                       isOpenModal: true,
                     }));
                   }}
+                  className="font-bold"
                 >
                   Set your preferences
                 </Button>
@@ -72,6 +74,7 @@ export default function Homepage() {
 
 function ModalPreferences() {
   const [modalPreferences, setModalPreferences] = useAtom(modalPreferencesAtom);
+
   const setIsOpenModalPreferences = useSetAtom(isOpenModalPreferencesAtom);
 
   const openRef = useRef<HTMLDivElement>(null);
@@ -85,65 +88,76 @@ function ModalPreferences() {
         ref={openRef}
         className="bg-white p-4 rounded-md flex justify-center items-center flex-col drop-shadow-md"
       >
-        <Paragraph>Kategori</Paragraph>
-        <select
-          value={modalPreferences.category}
-          onChange={(e) =>
-            setModalPreferences((prev) => ({
-              ...prev,
-              category: e.target.value,
-            }))
-          }
-        >
-          {quizCategories.map((item, index) => (
-            <option key={index + 1} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-        <Paragraph>Tingkat kesusahan</Paragraph>
-        <select
-          value={modalPreferences.difficulity}
-          onChange={(e) =>
-            setModalPreferences((prev) => ({
-              ...prev,
-              difficulity: e.target.value,
-            }))
-          }
-        >
-          {[
-            { difficulity: "easy" },
-            { difficulity: "medium" },
-            { difficulity: "hard" },
-          ].map((item, index) => (
-            <option key={index + 1} value={item.difficulity}>
-              {item.difficulity}
-            </option>
-          ))}
-        </select>
-        <Paragraph>Tipe</Paragraph>
-        <select
-          value={modalPreferences.type}
-          onChange={(e) =>
-            setModalPreferences((prev) => ({
-              ...prev,
-              type: e.target.value,
-            }))
-          }
-        >
-          {[{ type: "multiple" }, { type: "boolean" }].map((item, index) => (
-            <option key={index + 1} value={item.type}>
-              {item.type}
-            </option>
-          ))}
-        </select>
-        <div className="flex justify-center items-center space-x-3 w-fit">
+        <div className="space-y-3">
+          <div>
+            <Paragraph className="font-bold">Kategori</Paragraph>
+            <select
+              value={modalPreferences.category}
+              onChange={(e) =>
+                setModalPreferences((prev) => ({
+                  ...prev,
+                  category: e.target.value,
+                }))
+              }
+            >
+              {quizCategories.map((item, index) => (
+                <option key={index + 1} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Paragraph className="font-bold">Tingkat kesusahan</Paragraph>
+            <select
+              value={modalPreferences.difficulity}
+              onChange={(e) =>
+                setModalPreferences((prev) => ({
+                  ...prev,
+                  difficulity: e.target.value,
+                }))
+              }
+            >
+              {[
+                { difficulity: "easy" },
+                { difficulity: "medium" },
+                { difficulity: "hard" },
+              ].map((item, index) => (
+                <option key={index + 1} value={item.difficulity}>
+                  {item.difficulity}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Paragraph className="font-bold">Tipe</Paragraph>
+            <select
+              value={modalPreferences.type}
+              onChange={(e) =>
+                setModalPreferences((prev) => ({
+                  ...prev,
+                  type: e.target.value,
+                }))
+              }
+            >
+              {[{ type: "multiple" }, { type: "boolean" }].map(
+                (item, index) => (
+                  <option key={index + 1} value={item.type}>
+                    {item.type}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        </div>
+        <div className="flex justify-center items-center mt-4 space-x-3 w-fit">
           <Button
             onClick={() => {
               setIsOpenModalPreferences(false);
               setModalPreferences((prev) => ({ ...prev, isOpenModal: false }));
             }}
             variant="destructive"
+            className="font-bold"
           >
             Batal
           </Button>
@@ -156,6 +170,7 @@ function ModalPreferences() {
               );
               navigate("/quiz");
             }}
+            className="font-bold"
           >
             Mulai!
           </Button>
