@@ -43,7 +43,7 @@ export default function Homepage() {
               </SignedIn>
               <SignedOut>
                 <SignInButton forceRedirectUrl="/">
-                  <Button variant="outline" className="font-bold text-lg">
+                  <Button variant="outline" className="font-bold">
                     Sign In dengan Google
                   </Button>
                 </SignInButton>

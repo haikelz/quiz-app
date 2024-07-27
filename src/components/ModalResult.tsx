@@ -24,8 +24,8 @@ export default function ModalResult() {
         </div>
         <Button
           onClick={() => {
-            navigate("/");
             localStorage.removeItem("preferences");
+            navigate("/");
           }}
           className="font-bold"
         >

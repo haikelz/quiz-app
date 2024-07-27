@@ -1,5 +1,6 @@
 import IsError from "@/components/IsError";
 import IsPending from "@/components/IsPending";
+import ModalNotAvailableData from "@/components/ModalNotAvailableData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Paragraph } from "@/components/ui/typography";
@@ -17,7 +18,7 @@ import htmr from "htmr";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Suspense, lazy } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const ModalResult = lazy(() => import("@/components/ModalResult"));
 const ModalConfirmationSubmit = lazy(
@@ -31,7 +32,6 @@ export default function Quiz() {
 
   const modalConfirmationSubmit = useAtomValue(modalConfirmationSubmitAtom);
   const modalResult = useAtomValue(modalResultAtom);
-  const navigate = useNavigate();
 
   useTitle("Kerjakan soal kuis");
 
@@ -74,16 +74,9 @@ export default function Quiz() {
           <Navigate to="/" />
         )
       ) : (
-        <div className="fixed z-50 top-0 backdrop-blur-sm w-full flex justify-center min-h-svh items-center">
-          <div className="bg-white p-4 rounded-md drop-shadow-md flex justify-center items-center flex-col space-y-3">
-            <Paragraph className="font-bold text-lg">
-              Soal tidak tersedia!
-            </Paragraph>
-            <Button onClick={() => navigate("/")} className="font-bold">
-              Kembali ke beranda
-            </Button>
-          </div>
-        </div>
+        <Suspense>
+          <ModalNotAvailableData />
+        </Suspense>
       )}
     </>
   );
@@ -96,7 +89,6 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
   const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
 
   const { currentData, setCurrentPage, currentPage } = usePagination(questions);
-
   return (
     <>
       <div className="flex w-fit space-y-3 flex-col fixed right-4 justify-center items-center">

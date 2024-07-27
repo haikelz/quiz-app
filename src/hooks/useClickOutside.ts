@@ -1,6 +1,12 @@
 import { SetStateAction } from "jotai";
 import { Dispatch, RefObject, useCallback, useEffect } from "react";
 
+/**
+ * A custom hook to click outside an element
+ * @export
+ * @param {Dispatch<SetStateAction<boolean>>} set
+ * @param {RefObject<HTMLDivElement>} ref
+ */
 export function useClickOutside(
   set: Dispatch<SetStateAction<boolean>>,
   ref: RefObject<HTMLDivElement>
