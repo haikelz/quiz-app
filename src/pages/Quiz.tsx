@@ -7,6 +7,8 @@ import { useFetch, usePagination, useTitle } from "@/hooks";
 import { cn, env } from "@/lib/utils";
 import {
   answerAtom,
+  isBackToPreviousQuestionAtom,
+  isNextQuestionAtom,
   isRunningAtom,
   modalConfirmationSubmitAtom,
   modalPreferencesAtom,
@@ -99,18 +101,21 @@ export default function Quiz() {
 function QuestionsList({ questions }: { questions: QuestionProps[] }) {
   const [answer, setAnswer] = useAtom(answerAtom);
   const [selectAnswer, setSelectAnswer] = useAtom(selectAnswerAtom);
+  const [isBackToPreviousQuestion, setIsBackToPreviousQuestion] = useAtom(
+    isBackToPreviousQuestionAtom
+  );
+  const [isNextQuestion, setIsNextQuestion] = useAtom(isNextQuestionAtom);
 
   const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
 
   const { currentData, setCurrentPage, currentPage } = usePagination(questions);
-
-  console.log(answer);
 
   return (
     <>
       <div className="flex w-fit space-y-3 flex-col fixed right-4 justify-center items-center">
         {questions.map((item) => (
           <Button
+            key={item.id}
             variant="outline"
             className={cn(
               "w-10 h-10 rounded-full flex justify-center items-center",
@@ -130,7 +135,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
               ...item.incorrect_answers,
             ].sort();
             return (
-              <Card className="w-full">
+              <Card key={item.id} className="w-full">
                 <CardHeader className="flex justify-between w-full items-center flex-row">
                   <div className="rounded-sm bg-yellow-200 px-2 py-0.5 font-bold w-fit">
                     <Paragraph>{item.type}</Paragraph>
@@ -147,7 +152,29 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                   >
                     {currentPage > 1 ? (
                       <Button
-                        onClick={() => setCurrentPage((prev) => prev - 1)}
+                        onClick={() => {
+                          setCurrentPage((prev) => prev - 1);
+                          setIsBackToPreviousQuestion(true);
+
+                          selectAnswer !== "" && !isNextQuestion
+                            ? setAnswer((prev) =>
+                                prev.map((data) => ({
+                                  ...data,
+                                  answer:
+                                    data.id === item.id
+                                      ? selectAnswer
+                                      : data.answer,
+                                  status:
+                                    data.id === item.id &&
+                                    selectAnswer === item.correct_answer
+                                      ? true
+                                      : data.status,
+                                }))
+                              )
+                            : null;
+
+                          setSelectAnswer("");
+                        }}
                         size="icon"
                         className="rounded-full"
                         variant="outline"
@@ -159,26 +186,26 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                       <Button
                         onClick={() => {
                           setCurrentPage((prev) => prev + 1);
-                          selectAnswer !== ""
+                          setIsNextQuestion(true);
+
+                          selectAnswer !== "" && !isBackToPreviousQuestion
                             ? setAnswer((prev) =>
                                 prev.map((data) => ({
                                   ...data,
                                   answer:
                                     data.id === item.id
                                       ? selectAnswer
-                                      : data.id < item.id
-                                      ? data.answer
-                                      : "",
+                                      : data.answer,
                                   status:
                                     data.id === item.id &&
                                     selectAnswer === item.correct_answer
                                       ? true
-                                      : data.id < item.id
-                                      ? data.status
-                                      : false,
+                                      : data.status,
                                 }))
                               )
                             : null;
+
+                          setSelectAnswer("");
                         }}
                         size="icon"
                         className="rounded-full"
@@ -199,6 +226,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                                   : "",
                             }))
                           );
+
                           setModalConfirmationSubmit(true);
                         }}
                       >
@@ -212,16 +240,22 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                     {currentPage}. {htmr(item.question)}
                   </Paragraph>
                   <div className="flex justify-center flex-wrap gap-4 items-center mt-4">
-                    {answerOptions.map((ans) => (
+                    {answerOptions.map((ans, index) => (
                       <Button
+                        key={index + 1}
                         variant={
                           selectAnswer === ans ||
-                          answer[currentPage - 1].answer === ans
+                          (answer[currentPage - 1].answer === ans &&
+                            isBackToPreviousQuestion) ||
+                          (answer[currentPage - 1].answer === ans &&
+                            isNextQuestion)
                             ? "destructive"
                             : "secondary"
                         }
                         onClick={() => {
                           setSelectAnswer(ans);
+                          setIsBackToPreviousQuestion(false);
+                          setIsNextQuestion(false);
                         }}
                       >
                         {htmr(ans)}
