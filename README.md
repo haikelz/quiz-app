@@ -30,9 +30,9 @@
 
 ## TODO
 
-- Login (WIP)
+- Login (DONE)
 - Jumlah dan Type Soal (DONE)
-- Timer (WIP)
-- Timer habis, soal akan ditutup (WIP)
+- Timer (DONE)
+- Timer habis, soal akan ditutup (DONE)
 - Resume Kuis (WIP)
-- Masukin cara kerja sebuah Website Quiz (WIP)
+- Masukin cara kerja sebuah Website Quiz (DONE)
