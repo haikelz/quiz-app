@@ -1,6 +1,5 @@
 import IsError from "@/components/IsError";
 import IsPending from "@/components/IsPending";
-import ModalNotAvailableData from "@/components/ModalNotAvailableData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Paragraph } from "@/components/ui/typography";
@@ -8,6 +7,7 @@ import { useFetch, usePagination, useTitle } from "@/hooks";
 import { cn, env } from "@/lib/utils";
 import {
   answerAtom,
+  isRunningAtom,
   modalConfirmationSubmitAtom,
   modalPreferencesAtom,
   modalResultAtom,
@@ -24,11 +24,17 @@ const ModalResult = lazy(() => import("@/components/ModalResult"));
 const ModalConfirmationSubmit = lazy(
   () => import("@/components/ModalConfirmationSubmit")
 );
+const ModalNotAvailableData = lazy(
+  () => import("@/components/ModalNotAvailableData")
+);
+const Timer = lazy(() => import("@/components/Timer"));
+const ModalTimeout = lazy(() => import("@/components/ModalTimeout"));
 
 const { API_URL } = env;
 
 export default function Quiz() {
   const modalPreferences = useAtomValue(modalPreferencesAtom);
+  const isRunning = useAtomValue(isRunningAtom);
 
   const modalConfirmationSubmit = useAtomValue(modalConfirmationSubmitAtom);
   const modalResult = useAtomValue(modalResultAtom);
@@ -58,6 +64,9 @@ export default function Quiz() {
       {questions.length ? (
         modalPreferences.isOpenModal ? (
           <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
+            <Suspense>
+              <Timer />
+            </Suspense>
             <QuestionsList questions={questions} />
             {modalConfirmationSubmit ? (
               <Suspense>
@@ -78,6 +87,11 @@ export default function Quiz() {
           <ModalNotAvailableData />
         </Suspense>
       )}
+      {!isRunning ? (
+        <Suspense>
+          <ModalTimeout />
+        </Suspense>
+      ) : null}
     </>
   );
 }
@@ -89,6 +103,9 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
   const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
 
   const { currentData, setCurrentPage, currentPage } = usePagination(questions);
+
+  console.log(answer);
+
   return (
     <>
       <div className="flex w-fit space-y-3 flex-col fixed right-4 justify-center items-center">

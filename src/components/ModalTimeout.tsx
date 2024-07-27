@@ -4,7 +4,7 @@ import { Info } from "lucide-react";
 import { Button } from "./ui/button";
 import { Paragraph } from "./ui/typography";
 
-export default function ModalResult() {
+export default function ModalTimeout() {
   const answer = useAtomValue(answerAtom);
   const results = answer.filter((item) => item.status === true).length * 10;
 
@@ -14,9 +14,7 @@ export default function ModalResult() {
         <div className="flex justify-center items-center space-x-3">
           <Info />
           <Paragraph className="font-bold text-lg">
-            {results >= 70 && results <= 100
-              ? `Selamat! Nilai kamu ${results}`
-              : `Maaf, nilai kamu ${results}!`}
+            Maaf, waktu telah habis! Nilai kamu adalah {results}
           </Paragraph>
         </div>
         <Button
