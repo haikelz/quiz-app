@@ -1,150 +1,181 @@
-import IsError from "@/components/IsError";
-import IsPending from "@/components/IsPending";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Heading, Paragraph } from "@/components/ui/typography";
-import { useFetch, usePagination } from "@/hooks";
-import { env, quizCategories } from "@/lib/utils";
+import { useClickOutside } from "@/hooks";
+import { quizCategories } from "@/lib/utils";
+import { isOpenModalPreferencesAtom, modalPreferencesAtom } from "@/store";
 import {
-  answerAtom,
-  modalConfirmationAtom,
-  quizCategoryAtom,
-  rightAnswerAtom,
-} from "@/store";
-import { QuestionProps } from "@/types";
-import htmr from "htmr";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { ChangeEvent } from "react";
-import { useForm } from "react-hook-form";
+  SignInButton,
+  SignOutButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/clerk-react";
+import { useAtom, useSetAtom } from "jotai";
+import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Homepage() {
-  const [quizCategory, setQuizCategory] = useAtom(quizCategoryAtom);
-  const modalConfirmation = useAtomValue(modalConfirmationAtom);
+  const setModalPreferences = useSetAtom(modalPreferencesAtom);
 
-  const { data, isPending, isError, isRefetching } = useFetch(
-    `${env.API_URL}?amount=20${quizCategory ? `&category=${quizCategory}` : ""}`
+  const [isOpenModalPreferences, setIsOpenModalPreferences] = useAtom(
+    isOpenModalPreferencesAtom
   );
-
-  if (isPending || isRefetching) return <IsPending />;
-  if (isError) return <IsError />;
-
-  const questions = data.results as QuestionProps[];
-
-  function onChangeCategory(e: ChangeEvent<HTMLSelectElement>) {
-    setQuizCategory(Number(e.target.value));
-  }
 
   return (
     <>
-      <QuestionsList questions={questions} />
-      <section className="w-full flex justify-center items-center">
-        <select value={quizCategory} onChange={onChangeCategory}>
-          <option>Select Category</option>
-          {quizCategories.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-        <div className="flex justify-center items-center w-fit">
-          <Button>Previous</Button>
-          <Paragraph>1/10</Paragraph>
-          <Button>Next</Button>
+      <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
+        <div className="flex justify-center items-center">
+          <div className="flex flex-col justify-center items-start">
+            <div>
+              <div>
+                <Heading as="h2">Unleash the Fun, One Quiz at a Time</Heading>
+                <Paragraph className="mt-2">
+                  Welcome to Quizkuy, the ultimate destination for quiz lovers!
+                </Paragraph>
+              </div>
+            </div>
+            <div className="flex space-x-3 mt-4 justify-center items-center w-fit">
+              <SignedIn>
+                <SignOutButton>
+                  <Button variant="destructive" className="font-bold">
+                    Sign Out
+                  </Button>
+                </SignOutButton>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton forceRedirectUrl="/">
+                  <Button variant="outline" className="font-bold">
+                    Sign In dengan Google
+                  </Button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <Button
+                  onClick={() => {
+                    setIsOpenModalPreferences(true);
+                    setModalPreferences((prev) => ({
+                      ...prev,
+                      isOpenModal: true,
+                    }));
+                  }}
+                  className="font-bold"
+                >
+                  Set your preferences
+                </Button>
+              </SignedIn>
+            </div>
+          </div>
+          <img src="/images/illustration.svg" className="w-96 h-96" />
         </div>
       </section>
-      {modalConfirmation ? <ModalConfirmation /> : null}
+      {isOpenModalPreferences ? <ModalPreferences /> : null}
     </>
   );
 }
 
-function QuestionsList({ questions }: { questions: QuestionProps[] }) {
-  const [answer, setAnswer] = useAtom(answerAtom);
-  const [rightAnswer, setRightAnswer] = useAtom(rightAnswerAtom);
-  const setModalConfirmation = useSetAtom(modalConfirmationAtom);
+function ModalPreferences() {
+  const [modalPreferences, setModalPreferences] = useAtom(modalPreferencesAtom);
 
-  const { currentData, currentPage, pageNumbers, setCurrentPage } =
-    usePagination(questions);
+  const setIsOpenModalPreferences = useSetAtom(isOpenModalPreferencesAtom);
 
-  return (
-    <section className="flex justify-center w-full items-center max-w-7xl flex-col">
-      <Heading as="h2">Quizkuy</Heading>
-      <div className="grid grid-cols-3 w-full gap-6 grid-rows-1">
-        {currentData.map((item) => {
-          const answerOptions = [
-            item.correct_answer,
-            ...item.incorrect_answers,
-          ];
-          return (
-            <>
-              <Card>
-                <CardHeader>
-                  <div className="rounded-sm bg-yellow-200 px-2 py-0.5 font-bold w-fit">
-                    <Paragraph>{item.type}</Paragraph>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <Paragraph className="font-semibold">
-                    {htmr(item.question)}
-                  </Paragraph>
-                </CardContent>
-              </Card>
-              <div className="flex justify-center items-center space-x-4">
-                {answerOptions.map((answer) => (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setAnswer(answer);
-                      setRightAnswer(
-                        answer === item.correct_answer ? answer : ""
-                      );
-                      setModalConfirmation(true);
-                    }}
-                  >
-                    {answer}
-                  </Button>
-                ))}
-              </div>
-            </>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
+  const openRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-function ModalConfirmation() {
-  const [answer, setAnswer] = useAtom(answerAtom);
-  const [rightAnswer, setRightAnswer] = useAtom(rightAnswerAtom);
-  const [modalConfirmation, setModalConfirmation] = useAtom(
-    modalConfirmationAtom
-  );
-
-  const { getValues, handleSubmit, setValue } = useForm({
-    defaultValues: {
-      answer: "",
-    },
-  });
-
-  function onSubmit() {
-    setValue("answer", answer);
-  }
+  useClickOutside(setIsOpenModalPreferences, openRef);
 
   return (
-    <div className="blur-sm flex fixed justify-center items-center min-h-svh w-full">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-20 flex justify-center items-center flex-col bg-white"
+    <div className="fixed top-0 backdrop-blur-sm w-full flex justify-center items-center min-h-svh">
+      <div
+        ref={openRef}
+        className="bg-white p-4 rounded-md flex justify-center items-center flex-col drop-shadow-md"
       >
-        <Button onClick={() => setModalConfirmation(false)}>No</Button>
-        <Button
-          onClick={() => {
-            setModalConfirmation(false);
-          }}
-          type="submit"
-        >
-          Yes
-        </Button>
-      </form>
+        <div className="space-y-3">
+          <div>
+            <Paragraph className="font-bold">Kategori</Paragraph>
+            <select
+              value={modalPreferences.category}
+              onChange={(e) =>
+                setModalPreferences((prev) => ({
+                  ...prev,
+                  category: e.target.value,
+                }))
+              }
+            >
+              {quizCategories.map((item, index) => (
+                <option key={index + 1} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Paragraph className="font-bold">Tingkat kesusahan</Paragraph>
+            <select
+              value={modalPreferences.difficulity}
+              onChange={(e) =>
+                setModalPreferences((prev) => ({
+                  ...prev,
+                  difficulity: e.target.value,
+                }))
+              }
+            >
+              {[
+                { difficulity: "easy" },
+                { difficulity: "medium" },
+                { difficulity: "hard" },
+              ].map((item, index) => (
+                <option key={index + 1} value={item.difficulity}>
+                  {item.difficulity}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Paragraph className="font-bold">Tipe</Paragraph>
+            <select
+              value={modalPreferences.type}
+              onChange={(e) =>
+                setModalPreferences((prev) => ({
+                  ...prev,
+                  type: e.target.value,
+                }))
+              }
+            >
+              {[{ type: "multiple" }, { type: "boolean" }].map(
+                (item, index) => (
+                  <option key={index + 1} value={item.type}>
+                    {item.type}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        </div>
+        <div className="flex justify-center items-center mt-4 space-x-3 w-fit">
+          <Button
+            onClick={() => {
+              setIsOpenModalPreferences(false);
+              setModalPreferences((prev) => ({ ...prev, isOpenModal: false }));
+            }}
+            variant="destructive"
+            className="font-bold"
+          >
+            Batal
+          </Button>
+          <Button
+            onClick={() => {
+              setIsOpenModalPreferences(false);
+              localStorage.setItem(
+                "preferences",
+                JSON.stringify(modalPreferences)
+              );
+              navigate("/quiz");
+            }}
+            className="font-bold"
+          >
+            Mulai!
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

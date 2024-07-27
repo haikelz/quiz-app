@@ -33,5 +33,6 @@ export function useFetch(link: string): UseQueryResult<any, Error> {
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    refetchOnMount: false,
   });
 }

@@ -1,5 +1,7 @@
-import { SignIn as RedirectSignIn } from "@clerk/clerk-react";
+import { SignIn as SignedIn } from "@clerk/clerk-react";
 
 export default function SignIn() {
-  return <RedirectSignIn path="/auth/sign-in" />;
+  return (
+    <SignedIn routing="path" path="/auth/sign-in" signUpUrl="/auth/sign-up" />
+  );
 }

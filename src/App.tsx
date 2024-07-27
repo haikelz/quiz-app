@@ -1,36 +1,32 @@
-import { SignedOut } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Route, Routes } from "react-router-dom";
-import { Toaster } from "./components/ui/toaster";
+import { Navigate, Route, Routes } from "react-router-dom";
 import SignIn from "./pages/Auth/SignIn";
+import SignUp from "./pages/Auth/SignUp";
 import Homepage from "./pages/Home";
+import Quiz from "./pages/Quiz";
 
 export default function App() {
   const queryClient = new QueryClient();
+  const { isSignedIn } = useUser();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster />
-      <main className="flex justify-center items-center w-full p-4">
+      <main className="flex justify-center items-center w-full">
         <Routes>
+          <Route path="/" element={<Homepage />} />
           <Route
-            path="/"
-            element={
-              <SignedOut>
-                <Homepage />
-              </SignedOut>
-            }
+            path="/quiz"
+            element={isSignedIn ? <Quiz /> : <Navigate to="/" />}
           />
           <Route
             path="/auth/sign-in"
-            element={
-              <SignedOut>
-                <SignIn />
-              </SignedOut>
-            }
+            element={isSignedIn ? <Navigate to="/" /> : <SignIn />}
           />
-          <Route path="/questions" />
-          <Route path="/questions/:slug" />
+          <Route
+            path="/auth/sign-up"
+            element={isSignedIn ? <Navigate to="/" /> : <SignUp />}
+          />
         </Routes>
       </main>
     </QueryClientProvider>

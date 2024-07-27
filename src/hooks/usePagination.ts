@@ -1,5 +1,6 @@
+import { UsePaginationProps } from "@/types";
 import { atom, useAtomValue } from "jotai";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 /**
  * A custom hook to handle pagination.
@@ -7,15 +8,7 @@ import { Dispatch, SetStateAction, useState } from "react";
  * @param {Array<T>} data - data that want to paginate
  * @return {Object} currentPage, setCurrentPage, pageNumbers, currentData
  */
-
 const dataPerPageAtom = atom<number>(1);
-
-type UsePaginationProps<T> = {
-  currentPage: number;
-  setCurrentPage: Dispatch<SetStateAction<number>>;
-  pageNumbers: number[];
-  currentData: Array<T>;
-};
 
 export function usePagination<T>(data: Array<T>): UsePaginationProps<T> {
   const [currentPage, setCurrentPage] = useState<number>(1);
