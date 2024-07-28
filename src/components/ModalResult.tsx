@@ -27,7 +27,7 @@ export default function ModalResult() {
               : `Maaf, nilai kamu ${results}!`}
           </Paragraph>
         </div>
-        <Table>
+        <Table className="mt-2">
           <TableHeader>
             <TableRow>
               <TableHead className="font-bold">No</TableHead>
@@ -40,7 +40,7 @@ export default function ModalResult() {
               <TableRow key={item.id}>
                 <TableCell className="font-bold">{item.id}</TableCell>
                 <TableCell>{item.answer}</TableCell>
-                <TableCell>{item.status ? "Benar" : "Salah"}</TableCell>
+                <TableCell>{item.status ? "✅" : "❌"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
