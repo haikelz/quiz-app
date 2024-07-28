@@ -2,7 +2,6 @@ import { answerAtom } from "@/store";
 import { useAtomValue } from "jotai";
 import { Info } from "lucide-react";
 import { Button } from "./ui/button";
-import { Paragraph } from "./ui/typography";
 import {
   Table,
   TableBody,
@@ -11,10 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { Paragraph } from "./ui/typography";
 
 export default function ModalResult() {
   const answer = useAtomValue(answerAtom);
+
   const results = answer.filter((item) => item.status === true).length * 10;
+  const answeredQuestions = answer.filter((item) => item.answer.length);
+  const totalTrue = answer.filter((item) => item.status === true);
 
   return (
     <div className="fixed top-0 backdrop-blur-sm w-full flex justify-center items-center min-h-svh">
@@ -45,6 +48,13 @@ export default function ModalResult() {
             ))}
           </TableBody>
         </Table>
+        <div className="flex justify-center space-x-4 items-center">
+          <Paragraph>Dijawab: {answeredQuestions.length}</Paragraph>
+          <Paragraph>Jawaban benar: {totalTrue.length}</Paragraph>
+          <Paragraph>
+            Jawaban salah: {answer.length - totalTrue.length}
+          </Paragraph>
+        </div>
         <Button
           onClick={() => {
             localStorage.removeItem("preferences");

@@ -22,7 +22,7 @@ export default function ModalConfirmationSubmit() {
       >
         <div className="flex justify-center items-center space-x-3">
           <Info />
-          <Paragraph className="font-medium">
+          <Paragraph className="font-bold">
             Apakah kamu yakin ingin menyelesaikan kuis ini?
           </Paragraph>
         </div>
@@ -30,6 +30,7 @@ export default function ModalConfirmationSubmit() {
           <Button
             variant="destructive"
             onClick={() => setModalConfirmationSubmit(false)}
+            className="font-bold"
           >
             No
           </Button>
@@ -38,6 +39,7 @@ export default function ModalConfirmationSubmit() {
               setModalConfirmationSubmit(false);
               setModalResult(true);
             }}
+            className="font-bold"
           >
             Yes
           </Button>
