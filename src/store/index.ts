@@ -1,7 +1,7 @@
 import { ModalPreferencesProps } from "@/types";
 import { atom } from "jotai";
 
-export const timeLeftAtom = atom<number>(20);
+export const timeLeftAtom = atom<number>(1200);
 export const isRunningAtom = atom<boolean>(true);
 
 export const modalConfirmationAtom = atom<boolean>(false);
