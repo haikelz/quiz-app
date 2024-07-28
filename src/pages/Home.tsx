@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Heading, Paragraph } from "@/components/ui/typography";
-import { useClickOutside } from "@/hooks";
+import { useClickOutside, useTitle } from "@/hooks";
 import { quizCategories } from "@/lib/utils";
 import { isOpenModalPreferencesAtom, modalPreferencesAtom } from "@/store";
 import {
@@ -80,6 +80,7 @@ function ModalPreferences() {
   const openRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  useTitle("Quizkuy");
   useClickOutside(setIsOpenModalPreferences, openRef);
 
   return (

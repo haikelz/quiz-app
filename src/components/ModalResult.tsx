@@ -43,7 +43,7 @@ export default function ModalResult() {
             {answer.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-bold">{item.id}</TableCell>
-                <TableCell>{htmr(item.answer)}</TableCell>
+                <TableCell>{htmr(item.answer ? item.answer : "-")}</TableCell>
                 <TableCell>{item.status ? "✅" : "❌"}</TableCell>
               </TableRow>
             ))}
