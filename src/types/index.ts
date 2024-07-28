@@ -33,3 +33,9 @@ export type ModalPreferencesProps = {
   type: string;
   isOpenModal: boolean;
 };
+
+export type AnswerProps = {
+  id: number;
+  answer: string;
+  status: boolean;
+};

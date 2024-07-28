@@ -1,7 +1,13 @@
 import IsError from "@/components/IsError";
 import IsPending from "@/components/IsPending";
+import TotalAnsweredQuestions from "@/components/TotalAnsweredQuestions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Paragraph } from "@/components/ui/typography";
 import { useFetch, usePagination, useTitle } from "@/hooks";
 import { cn, env } from "@/lib/utils";
@@ -46,7 +52,11 @@ export default function Quiz() {
   const { data, isPending, isError, isRefetching } = useFetch(
     `${API_URL}?amount=10${
       modalPreferences.category ? `&category=${modalPreferences.category}` : ""
-    }${modalPreferences.type ? `&type=${modalPreferences.type}` : ""}${
+    }${
+      modalPreferences.type !== "random" && modalPreferences.type
+        ? `&type=${modalPreferences.type}`
+        : ""
+    }${
       modalPreferences.difficulity
         ? `&difficulity=${modalPreferences.difficulity}`
         : ""
@@ -236,7 +246,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                   </div>
                 </CardHeader>
                 <CardContent className="w-full">
-                  <Paragraph className="font-semibold">
+                  <Paragraph className="font-bold">
                     {currentPage}. {htmr(item.question)}
                   </Paragraph>
                   <div className="flex justify-center flex-wrap gap-4 items-center mt-4">
@@ -263,6 +273,9 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                     ))}
                   </div>
                 </CardContent>
+                <CardFooter className="text-center justify-center items-center flex">
+                  <TotalAnsweredQuestions />
+                </CardFooter>
               </Card>
             );
           })}
