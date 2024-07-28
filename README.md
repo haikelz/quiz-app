@@ -17,8 +17,8 @@
 
 ## Screenshots
 
-|                                                                      |                                                                      |
-| :------------------------------------------------------------------: | :------------------------------------------------------------------: |
+|                                                                       |                                                                       |
+| :-------------------------------------------------------------------: | :-------------------------------------------------------------------: |
 | ![pic 1](./public/docs/Screenshot%20from%202024-07-27%2011-06-16.png) | ![pic 2](./public/docs/Screenshot%20from%202024-07-27%2011-06-29.png) |
 | ![pic 3](./public/docs/Screenshot%20from%202024-07-28%2001-35-35.png) | ![pic 4](./public/docs/Screenshot%20from%202024-07-28%2001-54-51.png) |
 | ![pic 3](./public/docs/Screenshot%20from%202024-07-28%2001-56-13.png) | ![pic 4](./public/docs/Screenshot%20from%202024-07-28%2001-37-51.png) |
@@ -29,6 +29,13 @@
 - [Live Website](https://quizkuy.ekel.dev/)
 
 ## Getting Started
+
+A. Prerequisites
+
+- Node.js (Latest Version).
+- Docker (optional).
+
+B. Process
 
 - Clone this repo.
 - Install all dependencies with `pnpm install`.
