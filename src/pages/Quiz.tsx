@@ -1,6 +1,5 @@
 import IsError from "@/components/IsError";
 import IsPending from "@/components/IsPending";
-import TotalAnsweredQuestions from "@/components/TotalAnsweredQuestions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -119,6 +118,8 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
   const setModalConfirmationSubmit = useSetAtom(modalConfirmationSubmitAtom);
 
   const { currentData, setCurrentPage, currentPage } = usePagination(questions);
+
+  const answeredQuestions = answer.filter((item) => item.answer.length);
 
   return (
     <>
@@ -274,7 +275,12 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                   </div>
                 </CardContent>
                 <CardFooter className="text-center justify-center items-center flex">
-                  <TotalAnsweredQuestions />
+                  <div>
+                    <Paragraph className="font-bold">
+                      Terjawab: {answeredQuestions.length} dari {answer.length}{" "}
+                      soal
+                    </Paragraph>
+                  </div>
                 </CardFooter>
               </Card>
             );

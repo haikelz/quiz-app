@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Paragraph } from "./ui/typography";
+import htmr from "htmr";
 
 export default function ModalResult() {
   const answer = useAtomValue(answerAtom);
@@ -42,7 +43,7 @@ export default function ModalResult() {
             {answer.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="font-bold">{item.id}</TableCell>
-                <TableCell>{item.answer}</TableCell>
+                <TableCell>{htmr(item.answer)}</TableCell>
                 <TableCell>{item.status ? "✅" : "❌"}</TableCell>
               </TableRow>
             ))}
