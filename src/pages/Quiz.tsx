@@ -27,6 +27,8 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Suspense, lazy } from "react";
 import { Navigate } from "react-router-dom";
 
+const Timer = lazy(() => import("@/components/Timer"));
+const ModalTimeout = lazy(() => import("@/components/ModalTimeout"));
 const ModalResult = lazy(() => import("@/components/ModalResult"));
 const ModalConfirmationSubmit = lazy(
   () => import("@/components/ModalConfirmationSubmit")
@@ -34,8 +36,6 @@ const ModalConfirmationSubmit = lazy(
 const ModalNotAvailableData = lazy(
   () => import("@/components/ModalNotAvailableData")
 );
-const Timer = lazy(() => import("@/components/Timer"));
-const ModalTimeout = lazy(() => import("@/components/ModalTimeout"));
 
 const { API_URL } = env;
 
@@ -219,6 +219,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                           setSelectAnswer("");
                         }}
                         size="icon"
+                        variant="outline"
                         className="rounded-full"
                       >
                         <ArrowRight size={20} />
