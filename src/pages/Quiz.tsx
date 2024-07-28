@@ -121,6 +121,69 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
 
   const answeredQuestions = answer.filter((item) => item.answer.length);
 
+  function handleBackToPreviousQuestion(item: QuestionProps) {
+    setCurrentPage((prev) => prev - 1);
+    setIsBackToPreviousQuestion(true);
+
+    if (selectAnswer !== "" && !isNextQuestion) {
+      setAnswer((prev) =>
+        prev.map((data) => ({
+          ...data,
+          answer: data.id === item.id ? selectAnswer : data.answer,
+          status:
+            data.id === item.id && selectAnswer === item.correct_answer
+              ? true
+              : data.status,
+        }))
+      );
+    }
+
+    setSelectAnswer("");
+  }
+
+  function handleNextQuestion(item: QuestionProps) {
+    setCurrentPage((prev) => prev + 1);
+    setIsNextQuestion(true);
+
+    if (selectAnswer !== "" && !isBackToPreviousQuestion) {
+      setAnswer((prev) =>
+        prev.map((data) => ({
+          ...data,
+          answer: data.id === item.id ? selectAnswer : data.answer,
+          status:
+            data.id === item.id && selectAnswer === item.correct_answer
+              ? true
+              : data.status,
+        }))
+      );
+    }
+
+    setSelectAnswer("");
+  }
+
+  function handleSubmitAnswer(item: QuestionProps) {
+    if (selectAnswer !== "") {
+      setAnswer((prev) =>
+        prev.map((data) => ({
+          ...data,
+          answer: data.id === item.id ? selectAnswer : data.answer,
+          status:
+            data.id === item.id && selectAnswer === item.correct_answer
+              ? true
+              : data.status,
+        }))
+      );
+    }
+
+    setModalConfirmationSubmit(true);
+  }
+
+  function handleAnswerOption(ans: string) {
+    setSelectAnswer(ans);
+    setIsBackToPreviousQuestion(false);
+    setIsNextQuestion(false);
+  }
+
   return (
     <>
       <div className="flex w-fit space-y-3 flex-col fixed right-4 justify-center items-center">
@@ -163,29 +226,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                   >
                     {currentPage > 1 ? (
                       <Button
-                        onClick={() => {
-                          setCurrentPage((prev) => prev - 1);
-                          setIsBackToPreviousQuestion(true);
-
-                          selectAnswer !== "" && !isNextQuestion
-                            ? setAnswer((prev) =>
-                                prev.map((data) => ({
-                                  ...data,
-                                  answer:
-                                    data.id === item.id
-                                      ? selectAnswer
-                                      : data.answer,
-                                  status:
-                                    data.id === item.id &&
-                                    selectAnswer === item.correct_answer
-                                      ? true
-                                      : data.status,
-                                }))
-                              )
-                            : null;
-
-                          setSelectAnswer("");
-                        }}
+                        onClick={() => handleBackToPreviousQuestion(item)}
                         size="icon"
                         className="rounded-full"
                         variant="outline"
@@ -195,29 +236,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                     ) : null}
                     {currentPage < 10 ? (
                       <Button
-                        onClick={() => {
-                          setCurrentPage((prev) => prev + 1);
-                          setIsNextQuestion(true);
-
-                          selectAnswer !== "" && !isBackToPreviousQuestion
-                            ? setAnswer((prev) =>
-                                prev.map((data) => ({
-                                  ...data,
-                                  answer:
-                                    data.id === item.id
-                                      ? selectAnswer
-                                      : data.answer,
-                                  status:
-                                    data.id === item.id &&
-                                    selectAnswer === item.correct_answer
-                                      ? true
-                                      : data.status,
-                                }))
-                              )
-                            : null;
-
-                          setSelectAnswer("");
-                        }}
+                        onClick={() => handleNextQuestion(item)}
                         size="icon"
                         variant="outline"
                         className="rounded-full"
@@ -225,23 +244,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                         <ArrowRight size={20} />
                       </Button>
                     ) : (
-                      <Button
-                        onClick={() => {
-                          setAnswer((prev) =>
-                            prev.map((data) => ({
-                              ...data,
-                              answer:
-                                data.id === item.id
-                                  ? selectAnswer
-                                  : data.id < item.id
-                                  ? data.answer
-                                  : "",
-                            }))
-                          );
-
-                          setModalConfirmationSubmit(true);
-                        }}
-                      >
+                      <Button onClick={() => handleSubmitAnswer(item)}>
                         Submit
                       </Button>
                     )}
@@ -264,11 +267,7 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                             ? "destructive"
                             : "secondary"
                         }
-                        onClick={() => {
-                          setSelectAnswer(ans);
-                          setIsBackToPreviousQuestion(false);
-                          setIsNextQuestion(false);
-                        }}
+                        onClick={() => handleAnswerOption(ans)}
                       >
                         {htmr(ans)}
                       </Button>

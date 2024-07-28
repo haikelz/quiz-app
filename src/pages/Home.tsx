@@ -3,12 +3,7 @@ import { Heading, Paragraph } from "@/components/ui/typography";
 import { useClickOutside, useTitle } from "@/hooks";
 import { quizCategories } from "@/lib/utils";
 import { isOpenModalPreferencesAtom, modalPreferencesAtom } from "@/store";
-import {
-  SignInButton,
-  SignOutButton,
-  SignedIn,
-  SignedOut,
-} from "@clerk/clerk-react";
+import { SignOutButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { useAtom, useSetAtom } from "jotai";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +14,8 @@ export default function Homepage() {
   const [isOpenModalPreferences, setIsOpenModalPreferences] = useAtom(
     isOpenModalPreferencesAtom
   );
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -42,11 +39,13 @@ export default function Homepage() {
                 </SignOutButton>
               </SignedIn>
               <SignedOut>
-                <SignInButton forceRedirectUrl="/">
-                  <Button variant="outline" className="font-bold">
-                    Sign In dengan Google
-                  </Button>
-                </SignInButton>
+                <Button
+                  variant="outline"
+                  className="font-bold"
+                  onClick={() => navigate("/auth/sign-in")}
+                >
+                  Sign In dengan Google
+                </Button>
               </SignedOut>
               <SignedIn>
                 <Button
