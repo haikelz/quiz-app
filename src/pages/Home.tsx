@@ -140,13 +140,15 @@ function ModalPreferences() {
                 }))
               }
             >
-              {[{ type: "multiple" }, { type: "boolean" }].map(
-                (item, index) => (
-                  <option key={index + 1} value={item.type}>
-                    {item.type}
-                  </option>
-                )
-              )}
+              {[
+                { type: "random" },
+                { type: "multiple" },
+                { type: "boolean" },
+              ].map((item, index) => (
+                <option key={index + 1} value={item.type}>
+                  {item.type}
+                </option>
+              ))}
             </select>
           </div>
         </div>

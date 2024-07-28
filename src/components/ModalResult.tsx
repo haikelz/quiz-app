@@ -3,6 +3,14 @@ import { useAtomValue } from "jotai";
 import { Info } from "lucide-react";
 import { Button } from "./ui/button";
 import { Paragraph } from "./ui/typography";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
 export default function ModalResult() {
   const answer = useAtomValue(answerAtom);
@@ -19,6 +27,24 @@ export default function ModalResult() {
               : `Maaf, nilai kamu ${results}!`}
           </Paragraph>
         </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-bold">No</TableHead>
+              <TableHead className="font-bold">Jawabanmu</TableHead>
+              <TableHead className="font-bold">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {answer.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell className="font-bold">{item.id}</TableCell>
+                <TableCell>{item.answer}</TableCell>
+                <TableCell>{item.status ? "Benar" : "Salah"}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
         <Button
           onClick={() => {
             localStorage.removeItem("preferences");

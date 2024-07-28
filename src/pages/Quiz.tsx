@@ -46,7 +46,11 @@ export default function Quiz() {
   const { data, isPending, isError, isRefetching } = useFetch(
     `${API_URL}?amount=10${
       modalPreferences.category ? `&category=${modalPreferences.category}` : ""
-    }${modalPreferences.type ? `&type=${modalPreferences.type}` : ""}${
+    }${
+      modalPreferences.type !== "random" && modalPreferences.type
+        ? `&type=${modalPreferences.type}`
+        : ""
+    }${
       modalPreferences.difficulity
         ? `&difficulity=${modalPreferences.difficulity}`
         : ""
