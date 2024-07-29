@@ -28,7 +28,6 @@ import { Suspense, lazy } from "react";
 import { Navigate } from "react-router-dom";
 
 const Timer = lazy(() => import("@/components/Timer"));
-const ModalTimeout = lazy(() => import("@/components/ModalTimeout"));
 const ModalResult = lazy(() => import("@/components/ModalResult"));
 const ModalConfirmationSubmit = lazy(
   () => import("@/components/ModalConfirmationSubmit")
@@ -72,37 +71,33 @@ export default function Quiz() {
 
   return (
     <>
-      {questions.length ? (
-        modalPreferences.isOpenModal ? (
-          <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
-            <Suspense>
-              <Timer />
-            </Suspense>
-            <QuestionsList questions={questions} />
-            {modalConfirmationSubmit ? (
+      {isRunning && !modalResult ? (
+        questions.length ? (
+          modalPreferences.isOpenModal ? (
+            <section className="w-full flex flex-col justify-center max-w-4xl min-h-svh items-center">
               <Suspense>
-                <ModalConfirmationSubmit />
+                <Timer />
               </Suspense>
-            ) : null}
-            {modalResult ? (
-              <Suspense>
-                <ModalResult />
-              </Suspense>
-            ) : null}
-          </section>
+              <QuestionsList questions={questions} />
+              {modalConfirmationSubmit ? (
+                <Suspense>
+                  <ModalConfirmationSubmit />
+                </Suspense>
+              ) : null}
+            </section>
+          ) : (
+            <Navigate to="/" />
+          )
         ) : (
-          <Navigate to="/" />
+          <Suspense>
+            <ModalNotAvailableData />
+          </Suspense>
         )
       ) : (
         <Suspense>
-          <ModalNotAvailableData />
+          <ModalResult />
         </Suspense>
       )}
-      {!isRunning ? (
-        <Suspense>
-          <ModalTimeout />
-        </Suspense>
-      ) : null}
     </>
   );
 }
@@ -275,12 +270,10 @@ function QuestionsList({ questions }: { questions: QuestionProps[] }) {
                   </div>
                 </CardContent>
                 <CardFooter className="text-center justify-center items-center flex">
-                  <div>
-                    <Paragraph className="font-bold">
-                      Terjawab: {answeredQuestions.length} dari {answer.length}{" "}
-                      soal
-                    </Paragraph>
-                  </div>
+                  <Paragraph className="font-bold">
+                    Terjawab: {answeredQuestions.length} dari {answer.length}{" "}
+                    soal
+                  </Paragraph>
                 </CardFooter>
               </Card>
             );

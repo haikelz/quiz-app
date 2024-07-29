@@ -1,4 +1,4 @@
-import { answerAtom } from "@/store";
+import { answerAtom, isRunningAtom } from "@/store";
 import { useAtomValue } from "jotai";
 import { Info } from "lucide-react";
 import { Button } from "./ui/button";
@@ -15,6 +15,7 @@ import htmr from "htmr";
 
 export default function ModalResult() {
   const answer = useAtomValue(answerAtom);
+  const isRunning = useAtomValue(isRunningAtom);
 
   const results = answer.filter((item) => item.status === true).length * 10;
   const answeredQuestions = answer.filter((item) => item.answer.length);
@@ -26,7 +27,9 @@ export default function ModalResult() {
         <div className="flex justify-center items-center space-x-3">
           <Info />
           <Paragraph className="font-bold text-lg">
-            {results >= 70 && results <= 100
+            {!isRunning
+              ? `Maaf, waktu telah habis! Nilai kamu ${results}`
+              : results >= 70 && results <= 100
               ? `Selamat! Nilai kamu ${results}`
               : `Maaf, nilai kamu ${results}!`}
           </Paragraph>

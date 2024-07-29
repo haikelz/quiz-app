@@ -1,7 +1,7 @@
 import { AnswerProps, ModalPreferencesProps } from "@/types";
 import { atom } from "jotai";
 
-export const timeLeftAtom = atom<number>(1200);
+export const timeLeftAtom = atom<number>(1200); // 1200 / 60 seconds = 20 minutes
 export const isRunningAtom = atom<boolean>(true);
 export const modalConfirmationAtom = atom<boolean>(false);
 export const selectAnswerAtom = atom<string>("");
