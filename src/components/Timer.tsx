@@ -1,11 +1,13 @@
-import { isRunningAtom, timeLeftAtom } from "@/store";
-import { useAtom } from "jotai";
+import { isRunningAtom, modalResultAtom, timeLeftAtom } from "@/store";
+import { useAtom, useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { Paragraph } from "./ui/typography";
 
 export default function Timer() {
   const [timeLeft, setTimeLeft] = useAtom(timeLeftAtom);
   const [isRunning, setIsRunning] = useAtom(isRunningAtom);
+
+  const modalResult = useAtomValue(modalResultAtom);
 
   useEffect(() => {
     let initialInterval = null;
@@ -14,14 +16,14 @@ export default function Timer() {
       initialInterval = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 || modalResult) {
       setIsRunning(false);
     }
 
     return () => {
       if (initialInterval) clearInterval(initialInterval);
     };
-  }, [setTimeLeft, timeLeft, isRunning, setIsRunning]);
+  }, [setTimeLeft, timeLeft, isRunning, setIsRunning, modalResult]);
 
   function formatTime(time: number) {
     const minutes = Math.floor(time / 60);
